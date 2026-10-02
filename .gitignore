@@ -1,0 +1,33 @@
+# Entorno virtual — NUNCA se sube
+env/
+venv/
+.venv/
+
+# Pesos y runs de Ultralytics
+*.pt
+*.onnx
+*.engine
+runs/
+
+# Dataset completo local (solo samples va a git)
+data/dataset/
+data/raw/
+data/processed/
+datasets/
+
+# Labels auto-generados
+auto_labels/
+**/auto_labels/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Sistema / editores
+.DS_Store
+.vscode/
+.idea/
+*.log

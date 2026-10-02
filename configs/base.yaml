@@ -1,0 +1,13 @@
+# Config base WasteTag-AI — YOLO26s
+# Proyecto actual: autos (5 clases). Para otro proyecto,
+# cambia `data` y las clases en data/dataset/data.yaml.
+model: yolo26s.pt
+data: data/dataset/data.yaml
+epochs: 60
+imgsz: 640
+batch: 8
+device: 0
+patience: 20
+conf: 0.35
+project: runs/train
+name: yolo26s_autos

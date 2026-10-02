@@ -1,0 +1,9 @@
+# WasteTag-AI — instalar SOLO dentro de env/
+# Uso: ./env/bin/pip install -r requirements.txt
+# Requiere ultralytics>=8.4.163 para YOLO26 (yolo26s.pt)
+ultralytics>=8.4.163
+torch
+torchvision
+opencv-python
+pyyaml
+matplotlib
