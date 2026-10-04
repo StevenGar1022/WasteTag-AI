@@ -37,7 +37,9 @@ source env/bin/activate
 
 - [x] Fase 0 — base + samples + conexión GitHub (`v0.1.0`)
 - [x] Fase 1 — `src/check_dataset.py` (valida data.yaml, 1516/10/6 OK)
-- [ ] Fase 2 — `src/train.py` (yolo26s, 640, batch 8, epochs 60)
+- [x] Fase 2 — `src/train.py` (yolo26s, 640, batch 8, epochs 20, workers 0)
+  - Pesos: `runs/train/yolo26s_autos/weights/best.pt` (ignorado en git)
+  - Val (10 imgs): mAP50=0.995, mAP50-95=0.995
 - [ ] Fase 3 — `src/validate.py`
 - [ ] Fase 4 — `src/auto_label.py`
 - [ ] Fase 5 — `src/predict.py` demo video

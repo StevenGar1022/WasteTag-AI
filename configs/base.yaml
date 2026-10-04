@@ -3,11 +3,12 @@
 # cambia `data` y las clases en data/dataset/data.yaml.
 model: yolo26s.pt
 data: data/dataset/data.yaml
-epochs: 60
+epochs: 20
 imgsz: 640
 batch: 8
 device: 0
 patience: 20
+workers: 2
 conf: 0.35
 project: runs/train
 name: yolo26s_autos
