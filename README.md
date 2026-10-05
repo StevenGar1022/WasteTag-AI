@@ -40,7 +40,9 @@ source env/bin/activate
 - [x] Fase 2 — `src/train.py` (yolo26s, 640, batch 8, epochs 20, workers 0)
   - Pesos: `runs/train/yolo26s_autos/weights/best.pt` (ignorado en git)
   - Val (10 imgs): mAP50=0.995, mAP50-95=0.995
-- [ ] Fase 3 — `src/validate.py`
+- [x] Fase 3 — `src/validate.py` (val + test, métricas en `runs/val/*/metrics.txt`)
+  - val (10 imgs, solo clase 0): P=0.9952 R=1.0 mAP50=0.995 mAP50-95=0.995
+  - test (6 imgs, clases 0 y 2): P=0.9860 R=1.0 mAP50=0.995 mAP50-95=0.995
 - [ ] Fase 4 — `src/auto_label.py`
 - [ ] Fase 5 — `src/predict.py` demo video
 - [ ] Fase 6 — docs final (`v1.0.0`)
