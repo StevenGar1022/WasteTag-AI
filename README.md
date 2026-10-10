@@ -45,5 +45,6 @@ source env/bin/activate
   - test (6 imgs, clases 0 y 2): P=0.9860 R=1.0 mAP50=0.995 mAP50-95=0.995
 - [x] Fase 4 — `src/auto_label.py` (port del script original a CLI portable)
   - 6/6 samples con detecciones, clases y cajas ≈ GT (desvío <0.005)
-- [ ] Fase 5 — `src/predict.py` demo video
+- [x] Fase 5 — `src/predict.py` demo video (anotadas + TXTs en `runs/predict/demo/`)
+  - 6/6 samples, 6 cajas, clases ≈ GT (labels con conf para comparar en video)
 - [ ] Fase 6 — docs final (`v1.0.0`)
