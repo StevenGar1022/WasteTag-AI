@@ -20,6 +20,17 @@ wastetag-ai/
   env/            # IGNORADO (venv)
 ```
 
+## Descarga e instalación (comandos simples)
+
+```bash
+git clone https://github.com/StevenGar1022/WasteTag-AI.git
+cd WasteTag-AI
+python3 -m venv env && source env/bin/activate
+./env/bin/pip install -r requirements.txt
+./env/bin/pip install -e .   # registra el comando wastetag-ai
+wastetag-ai                  # CLI interactivo de auto-etiquetado
+```
+
 ## Uso (todo dentro de `env`)
 
 ```bash
@@ -47,4 +58,8 @@ source env/bin/activate
   - 6/6 samples con detecciones, clases y cajas ≈ GT (desvío <0.005)
 - [x] Fase 5 — `src/predict.py` demo video (anotadas + TXTs en `runs/predict/demo/`)
   - 6/6 samples, 6 cajas, clases ≈ GT (labels con conf para comparar en video)
+- [x] Fase 4.5 — `wastetag-ai` CLI interactivo (`src/wastetag_cli.py`, `v0.5.5`)
+  - Banner, selector de `.pt`, parámetros, barra de progreso, resumen,
+    alertas (0 etiquetadas / racha 200: posible overfitting o desbalance),
+    verificación visual aleatoria con contact-sheet
 - [ ] Fase 6 — docs final (`v1.0.0`)

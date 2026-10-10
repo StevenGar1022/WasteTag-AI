@@ -7,3 +7,4 @@ torchvision
 opencv-python
 pyyaml
 matplotlib
+rich

@@ -22,6 +22,42 @@ def collect_images(source: Path) -> list[Path]:
     )
 
 
+def etiquetar_imagen(model, img_path: Path, out_dir: Path,
+                     conf_min: float, imgsz: int = 640, device="0") -> dict:
+    """Infiere una imagen y escribe su .txt YOLO. Reutilizable por el CLI.
+    Retorna dict(saved, boxes=[{cls, conf, xywhn}], error=None|str).
+    """
+    res = model.predict(
+        source=str(img_path),
+        conf=conf_min,
+        imgsz=imgsz,
+        device=device,
+        verbose=False,
+        save=False,
+        augment=False,
+    )[0]
+    dets = []
+    n_raw = len(res.boxes)
+    for box in res.boxes:
+        conf = float(box.conf[0])
+        if conf < conf_min:
+            continue
+        dets.append({
+            "cls": int(box.cls[0]),
+            "conf": conf,
+            "xywhn": box.xywhn[0].tolist(),
+        })
+    txt_path = out_dir / (img_path.stem + ".txt")
+    if not dets:
+        txt_path.unlink(missing_ok=True)
+        return {"saved": 0, "boxes": [], "n_raw": n_raw, "error": None}
+    with open(txt_path, "w") as f:
+        for d in dets:
+            x, y, w, h = d["xywhn"]
+            f.write(f"{d['cls']} {x:.6f} {y:.6f} {w:.6f} {h:.6f}\n")
+    return {"saved": len(dets), "boxes": dets, "n_raw": n_raw, "error": None}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--source", required=True, help="Imagen o carpeta con imágenes")
@@ -60,46 +96,20 @@ def main() -> int:
     for i, img_path in enumerate(images):
         print(f"\n[{i+1}/{total}] {img_path.name}")
         try:
-            results = model.predict(
-                source=str(img_path),
-                conf=args.conf,
-                imgsz=args.imgsz,
-                device=args.device,
-                verbose=False,
-                save=False,
-                augment=False,
-            )
+            r = etiquetar_imagen(model, img_path, out_dir,
+                                 args.conf, args.imgsz, args.device)
         except Exception as e:
             print(f"ERROR EN INFERENCIA: {e}")
             without_det += 1
             continue
 
-        boxes = results[0].boxes
-        if len(boxes) == 0:
-            print("Sin detecciones")
+        if r["saved"] == 0:
             without_det += 1
-            continue
-
-        txt_path = out_dir / (img_path.stem + ".txt")
-        saved = 0
-        with open(txt_path, "w") as f:
-            for box in boxes:
-                conf = float(box.conf[0])
-                if conf < args.conf:
-                    continue
-                cls = int(box.cls[0])
-                x, y, w, h = box.xywhn[0].tolist()
-                f.write(f"{cls} {x:.6f} {y:.6f} {w:.6f} {h:.6f}\n")
-                saved += 1
-                total_boxes += 1
-
-        if saved == 0:
-            txt_path.unlink(missing_ok=True)
-            without_det += 1
-            print("Sin detecciones válidas")
+            print("Sin detecciones" if r["n_raw"] == 0 else "Sin detecciones válidas")
         else:
             with_det += 1
-            print(f"Detecciones guardadas: {saved}")
+            total_boxes += r["saved"]
+            print(f"Detecciones guardadas: {r['saved']}")
 
     print("\n===================================")
     print(" AUTO ETIQUETADO FINALIZADO ")
