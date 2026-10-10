@@ -13,6 +13,13 @@ Todo dentro de `env/` (entorno virtual ignorado en git).
 ```bash
 git clone https://github.com/StevenGar1022/WasteTag-AI.git
 cd WasteTag-AI
+./setup.sh        # crea env/, instala dependencias y registra el comando
+./wastetag-ai     # CLI interactivo (sin activar nada)
+```
+
+Equivalente manual (todo dentro de `env/`):
+
+```bash
 python3 -m venv env && source env/bin/activate
 ./env/bin/pip install -r requirements.txt
 ./env/bin/pip install -e .   # registra el comando wastetag-ai
@@ -32,13 +39,17 @@ Requisitos: Python ≥ 3.10 (probado en 3.14.7), `ultralytics>=8.4.163`, `torch`
 Comando registrado en `pyproject.toml` → `src.wastetag_cli:main`. Sin flags abre sesión guiada; con `--source` va en modo directo.
 
 ```bash
-# Sesión interactiva paso a paso
-wastetag-ai
+# Sesión interactiva paso a paso (elige .pt, carpeta, params)
+./wastetag-ai
 
-# Modo directo
-wastetag-ai --source data/samples --weights runs/train/yolo26s_autos/weights/best.pt
-wastetag-ai --source IMG.jpg --conf 0.5 --no-abrir
+# Modo directo (catálogos grandes: 100, 60 mil...)
+./wastetag-ai --source /ruta/fotos --weights runs/train/yolo26s_autos/weights/best.pt -r --lote 32
+./wastetag-ai --source IMG.jpg --conf 0.5 --no-abrir
 ```
+
+Flags útiles: `-r/--recursivo` (subcarpetas), `--lote 32` (inferencia por lotes, rápido),
+`--sobrescribir` (rehacer `.txt` existentes; si no, se omiten), `--racha-alerta 200`,
+`--muestras 4` + `--semilla 7` (verificación visual), `--no-abrir` (sin visor).
 
 Sesión interactiva (4 pasos):
 
@@ -61,6 +72,9 @@ Flags reales (`src/wastetag_cli.py`):
 | `--muestras` | `4` | Nº imágenes aleatorias para verificación visual |
 | `--semilla` | `7` | Semilla del muestreo aleatorio |
 | `--no-abrir` | — | No abrir el visor automáticamente |
+| `-r/--recursivo` | off | Buscar imágenes también en subcarpetas |
+| `--lote` | `32` | Tamaño de lote de inferencia (rápido para miles de imgs) |
+| `--sobrescribir` | off | Re-etiquetar aunque ya exista el `.txt` (si no, se omite) |
 
 Diagnósticos: si **0 etiquetadas** → alerta roja (conf muy alto, modelo de otro dominio, pesos/imgsz inadecuados). Si hay **racha ≥ `--racha-alerta`** → alerta amarilla (probable overfitting o desbalance de clases). Si todo OK → panel verde `AUTO ETIQUETADO EXITOSO`.
 
@@ -151,6 +165,8 @@ Auto-etiquetado y demo: 6/6 samples con detecciones, clases y cajas ≈ GT (desv
 
 ```text
 wastetag-ai/
+  setup.sh               # instalador (venv + deps + comando)
+  wastetag-ai            # lanzador del CLI (sin activar env)
   configs/base.yaml        # hiperparámetros base (epochs 20, imgsz 640, batch 8, ...)
   data/dataset/            # IGNORADO — dataset local (1516/10/6)
   data/samples/            # SÍ a git — 6 imgs + 6 labels demo
@@ -197,6 +213,7 @@ Historial (`git log --oneline`, `git tag`):
 | `v0.4.0` | Fase 3 | `src/validate.py` + métricas val/test en `runs/val/*/metrics.txt` |
 | `v0.5.0` | Fase 4 | `src/auto_label.py` portable + CLI, verificado 6/6 samples |
 | `v0.5.5` | Fase 4.5 | `wastetag-ai` interactivo con Rich + diagnósticos + verificación visual (`src/wastetag_cli.py`) |
+| `v0.5.6` | Fase 4.6 | `./setup.sh` + lanzador `./wastetag-ai` sin activar env; CLI robusto (reintento `.pt`, params validados, `-r`, `--lote`, omitir etiquetadas) |
 | `v0.6.0` | Fase 5 | `src/predict.py` demo video + labels con conf en `runs/predict/demo/` |
 | `v1.0.0` | Fase 6 | Docs final (este README) |
 

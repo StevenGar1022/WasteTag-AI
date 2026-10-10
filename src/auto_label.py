@@ -13,13 +13,65 @@ from ultralytics import YOLO
 VALID_EXTENSIONS = (".jpg", ".jpeg", ".png", ".bmp", ".webp")
 
 
-def collect_images(source: Path) -> list[Path]:
+def collect_images(source: Path, recursivo: bool = False) -> list[Path]:
     if source.is_file():
         return [source]
+    if recursivo:
+        return sorted(
+            p for p in source.rglob("*")
+            if p.is_file() and p.suffix.lower() in VALID_EXTENSIONS
+        )
     return sorted(
         p for p in source.iterdir()
         if p.is_file() and p.suffix.lower() in VALID_EXTENSIONS
     )
+
+
+def escribir_txt(out_dir: Path, stem: str, dets: list) -> Path:
+    txt_path = out_dir / (stem + ".txt")
+    with open(txt_path, "w") as f:
+        for d in dets:
+            x, y, w, h = d["xywhn"]
+            f.write(f"{d['cls']} {x:.6f} {y:.6f} {w:.6f} {h:.6f}\n")
+    return txt_path
+
+
+def etiquetar_lote(model, img_paths: list, out_dir: Path,
+                   conf_min: float, imgsz: int = 640, device="0") -> list[dict]:
+    """Infiere un lote de una sola pasada (rápido para miles de imágenes).
+    Retorna un dict por imagen: {saved, boxes, n_raw, error}.
+    """
+    results = model.predict(
+        source=[str(p) for p in img_paths],
+        conf=conf_min,
+        imgsz=imgsz,
+        device=device,
+        verbose=False,
+        save=False,
+        augment=False,
+    )
+    out = []
+    for img_path, res in zip(img_paths, results):
+        dets = []
+        for box in res.boxes:
+            conf = float(box.conf[0])
+            if conf < conf_min:
+                continue
+            dets.append({
+                "cls": int(box.cls[0]),
+                "conf": conf,
+                "xywhn": box.xywhn[0].tolist(),
+            })
+        txt_path = out_dir / (img_path.stem + ".txt")
+        if dets:
+            escribir_txt(out_dir, img_path.stem, dets)
+            out.append({"saved": len(dets), "boxes": dets,
+                        "n_raw": len(res.boxes), "error": None})
+        else:
+            txt_path.unlink(missing_ok=True)
+            out.append({"saved": 0, "boxes": [],
+                        "n_raw": len(res.boxes), "error": None})
+    return out
 
 
 def etiquetar_imagen(model, img_path: Path, out_dir: Path,
