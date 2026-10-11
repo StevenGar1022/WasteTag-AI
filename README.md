@@ -264,8 +264,7 @@ wastetag-ai/
 
 - **`workers=0` en Python 3.14:** el DataLoader multiproceso falla en 3.14 → entrena con `--workers 0` (`configs/base.yaml` trae `workers: 2` por defecto; el run consolidado usó override a 0). Si ves errores de workers/dataloader, repite con `--workers 0`.
 - **CUDA/GPU 4 GB:** usa `--device 0 --batch 8 --imgsz 640` (config probada). Si hay ROOM, baja a `--batch 4 --imgsz 512` o `--device cpu`.
-- **`xdg-open` (verificación visual):** en Linux sin entorno gráfico el mosaico no se abre solo → usa `--no-abrir` y abre `auto_labels/contact_sheet_verificacion.jpg` manualmente. Sin PIL/numpy el CLI avisa y omite el mosaico.
-- **Auth GitHub:** si `git push` pide credencial, usa Personal Access Token (classic) como password o `gh auth login`; no subas el token al repo.
+- **`xdg-open` (verificación visual):** en Linux sin entorno gráfico el mosaico no se abre solo → usa `--no-abrir` y abre `auto_labels/contact_sheet_verificacion.jpg` manualmente. Sin PIL/numpy el CLI 
 
 ## 8. Changelog (tags y fases)
 
