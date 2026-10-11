@@ -1,8 +1,8 @@
 # WasteTag-AI
 
-Auto-etiquetado + detección con **YOLO26s** (`yolo26s.pt`, Ultralytics ≥ 8.4.163).
+**WasteTag-AI** es una herramienta interactiva de **auto-etiquetado de imágenes en formato YOLO**: carga tu mejor modelo `.pt`, recorre cientos o miles de fotos y genera sus archivos `.txt` de etiquetas automáticamente, con barra de progreso, métricas de sesión, diagnósticos de rendimiento y verificación visual aleatoria. Incluye el pipeline completo con **YOLO26s**: validación de dataset, entrenamiento, evaluación e inferencia demo.
 
-Proyecto base actual: **autos** con 5 clases. El pipeline es reutilizable: para otro dominio (p. ej. basura) cambia las clases en `data/dataset/data.yaml` y reentrena.
+Proyecto base actual: **autos** con 5 clases. Es reutilizable en cualquier dominio (p. ej. basura): cambia las clases en `data/dataset/data.yaml` y reentrena.
 
 > Tag actual: `v1.0.0` en `main`.
 
