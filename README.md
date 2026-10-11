@@ -1,6 +1,10 @@
 # WasteTag-AI
 
-**WasteTag-AI** es una herramienta interactiva de **auto-etiquetado de imágenes en formato YOLO**: carga tu mejor modelo `.pt`, recorre cientos o miles de fotos y genera sus archivos `.txt` de etiquetas automáticamente, con barra de progreso, métricas de sesión, diagnósticos de rendimiento y verificación visual aleatoria. Incluye el pipeline completo con **YOLO26s**: validación de dataset, entrenamiento, evaluación e inferencia demo.
+**WasteTag-AI** es una herramienta interactiva de **auto-etiquetado de imágenes en formato YOLO**:
+carga tu mejor modelo `.pt`, recorre cientos o miles de fotos y genera sus archivos `.txt` de etiquetas
+automáticamente, con barra de progreso, métricas de sesión, diagnósticos de rendimiento
+y verificación visual aleatoria. Incluye el pipeline completo con **YOLO26s**:
+validación de dataset, entrenamiento, evaluación e inferencia demo.
 
 Proyecto base actual: **autos** con 5 clases. Es reutilizable en cualquier dominio (p. ej. basura): cambia las clases en `data/dataset/data.yaml` y reentrena.
 
@@ -77,11 +81,11 @@ El `git clone` **no trae ningún `.pt`**: `*.pt` y `runs/` están ignorados en `
 ### Si ves esto → haz esto
 
 | Si ves esto | Haz esto |
-|---|---|
-| `No existe env/. Ejecuta primero:  ./setup.sh` (`env/` ausente) | Ejecuta `./setup.sh` completo desde la raíz del repo y reintenta |
-| La instalación de `torch` tarda mucho o parece congelada | Normal: son ~4 GB; no canceles, espera con conexión estable |
-| Sin GPU, error de CUDA o memoria llena  | Usa `--device cpu` y, si sigue fallando, baja a `--batch 4 --imgsz 512` |
-| Sin visor gráfico o error con `xdg-open` | Añade `--no-abrir` y abre `auto_labels/contact_sheet_verificacion.jpg` manualmente |
+|:---|:---|
+| `No existe env/. Ejecuta primero:  ./setup.sh` | Ver [Troubleshooting](#7-troubleshooting) — reejecutar instalación |
+| Instalación de `torch` lenta o aparentemente congelada | Ver [Troubleshooting](#7-troubleshooting) — tiempos esperados |
+| Sin GPU, error de CUDA o memoria llena (OOM) | Ver [Troubleshooting](#7-troubleshooting) — dispositivo y lote |
+| Sin visor gráfico o error con `xdg-open` | Ver [Troubleshooting](#7-troubleshooting) — modo `--no-abrir` |
 
 Equivalente manual (todo dentro de `env/`):
 
@@ -127,7 +131,7 @@ Sesión interactiva (4 pasos):
 Flags reales (`src/wastetag_cli.py`):
 
 | Flag | Defecto | Descripción |
-|---|---|---|
+|:---|:---|:---|
 | `--source` | interactivo | Imagen o carpeta. Si se pasa, modo directo |
 | `--weights` | `runs/train/yolo26s_autos/weights/best.pt` | Ruta al `.pt` |
 | `--output` | `auto_labels` | Carpeta de labels `.txt` YOLO |
@@ -176,7 +180,11 @@ Todos se ejecutan desde la raíz dentro de `env/` con `./env/bin/python src/<scr
 Flags verificados en `argparse`:
 
 - `check_dataset.py`: `--data` (def. `data/dataset/data.yaml`).
-- `train.py`: `--config`, `--model`, `--data`, `--epochs`, `--imgsz`, `--batch`, `--device`, `--patience`, `--project`, `--name`, `--resume`, `--workers`. Los valores CLI prevalecen sobre `configs/base.yaml` (`model: yolo26s.pt`, `epochs: 20`, `imgsz: 640`, `batch: 8`, `device: 0`, `patience: 20`, `project: runs/train`, `name: yolo26s_autos`).
+- `train.py`: `--config`, `--model`, `--data`, `--epochs`, `--imgsz`, `--batch`, `--device`,
+  `--patience`, `--project`, `--name`, `--resume`, `--workers`.
+  Los valores CLI prevalecen sobre `configs/base.yaml`
+  (`model: yolo26s.pt`, `epochs: 20`, `imgsz: 640`, `batch: 8`,
+  `device: 0`, `patience: 20`, `project: runs/train`, `name: yolo26s_autos`).
 - `validate.py`: `--weights`, `--data`, `--split {val,test,train}`, `--imgsz`, `--batch`, `--device`, `--conf` (def. 0.001), `--project`, `--name`.
 - `auto_label.py`: `--source` (requerido), `--weights`, `--output`, `--conf`, `--imgsz`, `--device`.
 - `predict.py`: `--weights`, `--source`, `--project`, `--name`, `--conf`, `--imgsz`, `--device`.
@@ -186,7 +194,7 @@ Flags verificados en `argparse`:
 Splits verificados en local (conteo directo):
 
 | Split | Imágenes | Notas |
-|---|---|---|
+|:---|:---|:---|
 | `train` | 1516 | `data/dataset/train/images` |
 | `valid` (`val`) | 10 | `data.yaml` usa `val: valid/images`; `check_dataset.py` tiene fallback `val` ↔ `valid` |
 | `test` | 6 | `data/dataset/test/images` |
@@ -194,7 +202,7 @@ Splits verificados en local (conteo directo):
 Clases (`nc: 5`, según `data/dataset/data.yaml`, origen Roboflow `ieee2/car-make-and-model-identification-2`, CC BY 4.0):
 
 | ID | Clase |
-|---|---|
+|:---|:---|
 | 0 | Mahindra XUV700 |
 | 1 | Maruti Suzuki Brezza |
 | 2 | Maruti Suzuki Dzire |
@@ -214,13 +222,13 @@ Entrenamiento: YOLO26s, 640 px, batch 8, **20 epochs**, `workers 0` (ver trouble
 Val (10 imgs, solo clase 0 presente):
 
 | P | R | mAP50 | mAP50-95 |
-|---|---|---|---|
+|:---|:---|:---|:---|
 | 0.9952 | 1.0000 | 0.9950 | 0.9950 |
 
 Test (6 imgs, clases 0 y 2 presentes):
 
 | P | R | mAP50 | mAP50-95 |
-|---|---|---|---|
+|:---|:---|:---|:---|
 | 0.9860 | 1.0000 | 0.9950 | 0.9950 |
 
 Por clase (mAP50): `0 Mahindra XUV700: 0.9950` (val y test), `2 Maruti Suzuki Dzire: 0.9950` (test). Val/test son muy pequeños (10/6 imgs) → métricas casi perfectas pero **no concluyentes**; el CLI avisa de posible overfitting si aparecen rachas sin detecciones.
@@ -262,6 +270,8 @@ wastetag-ai/
 
 ## 7. Troubleshooting
 
+- **`No existe env/. Ejecuta primero:  ./setup.sh` (`env/` ausente):** el Paso 2 no se completó. Ejecuta `./setup.sh` completo desde la raíz del repo y reintenta.
+- **Instalación de `torch` lenta o aparentemente congelada:** normal, `torch` + CUDA pesan ~4 GB. No canceles, espera con conexión estable.
 - **`workers=0` en Python 3.14:** el DataLoader multiproceso falla en 3.14 → entrena con `--workers 0` (`configs/base.yaml` trae `workers: 2` por defecto; el run consolidado usó override a 0). Si ves errores de workers/dataloader, repite con `--workers 0`.
 - **CUDA/GPU 4 GB:** usa `--device 0 --batch 8 --imgsz 640` (config probada). Si hay ROOM, baja a `--batch 4 --imgsz 512` o `--device cpu`.
 - **`xdg-open` (verificación visual):** en Linux sin entorno gráfico el mosaico no se abre solo → usa `--no-abrir` y abre `auto_labels/contact_sheet_verificacion.jpg` manualmente. Sin PIL/numpy el CLI 
@@ -271,7 +281,7 @@ wastetag-ai/
 Historial (`git log --oneline`, `git tag`):
 
 | Tag | Fase | Cambio |
-|---|---|---|
+|:---|:---|:---|
 | `v0.1.0` | Fase 0 | Estructura base, `.gitignore`, `requirements.txt`, `data/samples/` + conexión GitHub |
 | `v0.2.0` | Fase 1 | `src/check_dataset.py` + `utils.py`, 5 clases autos, 1516/10/6 OK |
 | `v0.3.0` | Fase 2 | `src/train.py`: YOLO26s 20 epochs batch 8 workers 0, run `yolo26s_autos` consolidado |
@@ -281,6 +291,7 @@ Historial (`git log --oneline`, `git tag`):
 | `v0.5.6` | Fase 4.6 | `./setup.sh` + lanzador `./wastetag-ai` sin activar env; CLI robusto (reintento `.pt`, params validados, `-r`, `--lote`, omitir etiquetadas) |
 | `v0.6.0` | Fase 5 | `src/predict.py` demo video + labels con conf en `runs/predict/demo/` |
 | `v1.0.0` | Fase 6 | Docs final (este README) |
+| (sin tag) | Docs post-v1.0.0 | `52cc44e` paso a paso instalación `setup.sh` + ejecución CLI; `515f819` descripción breve al inicio del README |
 
 ## 9. Licencia y notas
 
