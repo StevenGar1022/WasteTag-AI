@@ -6,8 +6,12 @@ Uso (desde raíz, dentro de env):
 Métricas en runs/val/<name>/metrics.txt (ignorado en git).
 """
 import argparse
+import sys
 from pathlib import Path
 from ultralytics import YOLO
+
+sys.path.insert(0, str(Path(__file__).parent))
+from utils import resolver_device  # noqa: E402
 
 
 def main() -> int:
@@ -17,11 +21,12 @@ def main() -> int:
     ap.add_argument("--split", default="val", choices=["val", "test", "train"])
     ap.add_argument("--imgsz", type=int, default=640)
     ap.add_argument("--batch", type=int, default=8)
-    ap.add_argument("--device", default="0")
+    ap.add_argument("--device", default="auto")
     ap.add_argument("--conf", type=float, default=0.001)
     ap.add_argument("--project", default="runs/val")
     ap.add_argument("--name", default="yolo26s_autos")
     args = ap.parse_args()
+    args.device = resolver_device(args.device)
 
     project = Path(args.project).resolve()
     print("=== VALIDATE ===")

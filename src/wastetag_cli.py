@@ -18,6 +18,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from auto_label import collect_images, etiquetar_imagen, etiquetar_lote  # noqa: E402
+from utils import resolver_device  # noqa: E402
 
 from rich.console import Console  # noqa: E402
 from rich.panel import Panel  # noqa: E402
@@ -158,11 +159,12 @@ def pedir_params(args, interactivo: bool) -> dict:
         console.print(f"[red]--imgsz inválido ({args.imgsz}).[/red]")
         raise SystemExit(1)
     if args.device is None:
-        args.device = (Prompt.ask("Dispositivo (0 / cpu)", default="0")
-                       if interactivo else "0")
+        args.device = (Prompt.ask("Dispositivo (auto / 0 / cpu)", default="auto")
+                       if interactivo else "auto")
     if not str(args.device).strip():
         console.print("[red]Dispositivo vacío.[/red]")
         raise SystemExit(1)
+    args.device = resolver_device(args.device)
     if args.output is None:
         args.output = (Prompt.ask("Carpeta salida labels", default="auto_labels")
                        if interactivo else "auto_labels")
@@ -260,7 +262,8 @@ def main() -> int:
     ap.add_argument("--output", default=None)
     ap.add_argument("--conf", type=float, default=None)
     ap.add_argument("--imgsz", type=int, default=None)
-    ap.add_argument("--device", default=None)
+    ap.add_argument("--device", default=None,
+                    help="auto (detecta CUDA/mps/cpu), 0, cpu...")
     ap.add_argument("--racha-alerta", type=int, default=200,
                     help="Racha de no-etiquetadas que dispara diagnóstico (default 200)")
     ap.add_argument("--muestras", type=int, default=4,

@@ -6,7 +6,7 @@ data: data/dataset/data.yaml
 epochs: 20
 imgsz: 640
 batch: 8
-device: 0
+device: auto
 patience: 20
 workers: 2
 conf: 0.35

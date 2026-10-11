@@ -56,3 +56,19 @@ def label_issues(rows: list[tuple], nc: int) -> list[str]:
         if w <= 0 or h <= 0:
             errs.append(f"w,h inválidos ({w},{h})")
     return errs
+
+
+def resolver_device(valor="auto"):
+    """'auto' -> '0' (CUDA), 'mps' (Apple Silicon) o 'cpu'. Pasa el resto tal cual."""
+    if valor is None or str(valor).lower() == "auto":
+        try:
+            import torch
+            if torch.cuda.is_available():
+                return "0"
+            if getattr(torch.backends, "mps", None) is not None \
+                    and torch.backends.mps.is_available():
+                return "mps"
+        except Exception:
+            pass
+        return "cpu"
+    return valor

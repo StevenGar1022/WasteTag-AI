@@ -7,8 +7,12 @@ Uso (desde raíz, dentro de env):
     ./env/bin/python src/predict.py --source data/samples --name demo --conf 0.35
 """
 import argparse
+import sys
 from pathlib import Path
 from ultralytics import YOLO
+
+sys.path.insert(0, str(Path(__file__).parent))
+from utils import resolver_device  # noqa: E402
 
 
 def main() -> int:
@@ -19,8 +23,9 @@ def main() -> int:
     ap.add_argument("--name", default="demo")
     ap.add_argument("--conf", type=float, default=0.35)
     ap.add_argument("--imgsz", type=int, default=640)
-    ap.add_argument("--device", default="0")
+    ap.add_argument("--device", default="auto")
     args = ap.parse_args()
+    args.device = resolver_device(args.device)
 
     project = Path(args.project).resolve()
     print("=== PREDICT DEMO ===")

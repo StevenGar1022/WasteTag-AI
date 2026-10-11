@@ -5,9 +5,13 @@ Uso (desde raíz, dentro de env):
 Pesos salen en runs/train/<name>/weights/best.pt (ignorado en git).
 """
 import argparse
+import sys
 from pathlib import Path
 import yaml
 from ultralytics import YOLO
+
+sys.path.insert(0, str(Path(__file__).parent))
+from utils import resolver_device  # noqa: E402
 
 
 def load_cfg(path: Path) -> dict:
@@ -41,7 +45,8 @@ def main() -> int:
     workers = args.workers if args.workers is not None else int(cfg.get("workers", 2))
     project = Path(args.project or cfg.get("project", "runs/train")).resolve()
     name = args.name or cfg.get("name", "yolo26s_autos")
-    device = args.device if args.device is not None else cfg.get("device", 0)
+    device = resolver_device(args.device if args.device is not None
+                             else cfg.get("device", "auto"))
 
     print("=== TRAIN YOLO26s ===")
     print(f"model={model_ckpt} data={data} epochs={epochs} imgsz={imgsz} "

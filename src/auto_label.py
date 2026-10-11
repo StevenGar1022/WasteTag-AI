@@ -7,8 +7,12 @@ Uso (desde raíz, dentro de env):
     ./env/bin/python src/auto_label.py --source IMG.jpg --output auto_labels --conf 0.35 --imgsz 640 --device 0
 """
 import argparse
+import sys
 from pathlib import Path
 from ultralytics import YOLO
+
+sys.path.insert(0, str(Path(__file__).parent))
+from utils import resolver_device  # noqa: E402
 
 VALID_EXTENSIONS = (".jpg", ".jpeg", ".png", ".bmp", ".webp")
 
@@ -117,8 +121,9 @@ def main() -> int:
     ap.add_argument("--output", default="auto_labels")
     ap.add_argument("--conf", type=float, default=0.35)
     ap.add_argument("--imgsz", type=int, default=640)
-    ap.add_argument("--device", default="0")
+    ap.add_argument("--device", default="auto")
     args = ap.parse_args()
+    args.device = resolver_device(args.device)
 
     source, out_dir = Path(args.source), Path(args.output)
     out_dir.mkdir(parents=True, exist_ok=True)
