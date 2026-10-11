@@ -8,14 +8,80 @@ Proyecto base actual: **autos** con 5 clases. El pipeline es reutilizable: para 
 
 ## 1. Descarga e instalación
 
-Todo dentro de `env/` (entorno virtual ignorado en git).
+Guía paso a paso para usuario normal. Solo necesitas una terminal con **Python ≥ 3.10** (probado en 3.14.7) y `git`. Todo queda dentro de `env/` (entorno virtual, ignorado en git).
+
+### Paso 1 — Clonar el repositorio
 
 ```bash
 git clone https://github.com/StevenGar1022/WasteTag-AI.git
 cd WasteTag-AI
-./setup.sh        # crea env/, instala dependencias y registra el comando
-./wastetag-ai     # CLI interactivo (sin activar nada)
 ```
+
+### Paso 2 — Instalar todo con `./setup.sh`
+
+```bash
+./setup.sh
+```
+
+El script (`setup.sh`) hace 3 cosas, en orden:
+
+1. `[1/3] Creando entorno virtual env/...` → ejecuta `python3 -m venv env` (si `env/` ya existe, lo reutiliza).
+2. `[2/3] Instalando dependencias...` → `./env/bin/pip install -r requirements.txt` (`ultralytics>=8.4.163`, `torch`, `torchvision`, `opencv-python`, `pyyaml`, `matplotlib`, `rich`). Ojo: `torch` + CUDA pesan ~4 GB, este paso tarda varios minutos.
+3. `[3/3] Registrando comando wastetag-ai...` → `./env/bin/pip install -e .` (registra el comando según `pyproject.toml` → `src.wastetag_cli:main`) y lo autoverifica con `wastetag-ai --help`.
+
+Salida esperada al terminar:
+
+```text
+OK. Ahora ejecuta:  ./wastetag-ai
+(comando wastetag-ai verificado)
+```
+
+### Paso 3 — Verificar la instalación
+
+```bash
+./wastetag-ai --help
+```
+
+Debe mostrar el uso y la descripción del programa (verificado en `src/wastetag_cli.py`):
+
+```text
+usage: wastetag-ai [-h] [--source SOURCE] [--weights WEIGHTS] ...
+WASTETAG-AI — Herramienta interactiva de Auto-Etiquetado
+```
+
+Si en vez de eso ves `No existe env/. Ejecuta primero:  ./setup.sh`, es que el Paso 2 no se completó (ver mini-tabla abajo).
+
+### Paso 4 — Ejecutar
+
+Sesión interactiva (recomendada la primera vez):
+
+```bash
+./wastetag-ai
+```
+
+Te guía en 4 pasos: **1)** elegir modelo `.pt`, **2)** elegir carpeta o imagen, **3)** confirmar parámetros (`conf`, `imgsz`, `device`, salida), **4)** etiquetado con resumen y verificación visual. Detalle completo en la [sección 2](#2-cli-interactivo-wastetag-ai).
+
+Ejemplo directo con las imágenes de prueba que sí vienen con el clone (`data/samples/`, 6 imágenes):
+
+```bash
+./wastetag-ai --source data/samples --weights yolo26s.pt --no-abrir
+```
+
+### Paso 5 — Poner tu propio modelo
+
+El `git clone` **no trae ningún `.pt`**: `*.pt` y `runs/` están ignorados en `.gitignore` (no se suben al repo).
+
+- **Tu modelo entrenado:** copia tu `best.pt` a `runs/train/yolo26s_autos/weights/best.pt` (crea las carpetas si no existen). Esa es la ruta que el CLI usa por defecto.
+- **Modelo base:** `yolo26s.pt` no hace falta descargarlo a mano — Ultralytics lo descarga solo la primera vez que se usa (el CLI te lo ofrece: escribe `yolo26s.pt` cuando te pida el modelo).
+
+### Si ves esto → haz esto
+
+| Si ves esto | Haz esto |
+|---|---|
+| `No existe env/. Ejecuta primero:  ./setup.sh` (`env/` ausente) | Ejecuta `./setup.sh` completo desde la raíz del repo y reintenta |
+| La instalación de `torch` tarda mucho o parece congelada | Normal: son ~4 GB; no canceles, espera con conexión estable |
+| Sin GPU, error de CUDA o memoria llena (OOM) | Usa `--device cpu` y, si sigue fallando, baja a `--batch 4 --imgsz 512` |
+| Sin visor gráfico o error con `xdg-open` | Añade `--no-abrir` y abre `auto_labels/contact_sheet_verificacion.jpg` manualmente |
 
 Equivalente manual (todo dentro de `env/`):
 
