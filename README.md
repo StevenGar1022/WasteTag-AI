@@ -80,7 +80,7 @@ El `git clone` **no trae ningún `.pt`**: `*.pt` y `runs/` están ignorados en `
 |---|---|
 | `No existe env/. Ejecuta primero:  ./setup.sh` (`env/` ausente) | Ejecuta `./setup.sh` completo desde la raíz del repo y reintenta |
 | La instalación de `torch` tarda mucho o parece congelada | Normal: son ~4 GB; no canceles, espera con conexión estable |
-| Sin GPU, error de CUDA o memoria llena (OOM) | Usa `--device cpu` y, si sigue fallando, baja a `--batch 4 --imgsz 512` |
+| Sin GPU, error de CUDA o memoria llena  | Usa `--device cpu` y, si sigue fallando, baja a `--batch 4 --imgsz 512` |
 | Sin visor gráfico o error con `xdg-open` | Añade `--no-abrir` y abre `auto_labels/contact_sheet_verificacion.jpg` manualmente |
 
 Equivalente manual (todo dentro de `env/`):
